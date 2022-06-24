@@ -1,0 +1,39 @@
+﻿<Properties StartupConfiguration="{E2A6A45D-4CA7-49F2-8493-CFC38B7F4FE0}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MeetRetriever/Controllers/EventsController.cs">
+    <Files>
+      <File FileName="MeetRetriever/Controllers/MeetsController.cs" Line="1" Column="1" />
+      <File FileName="MeetRetriever/DiveMeetsScraper.cs" Line="5" Column="28" />
+      <File FileName="MeetRetriever/IDiveMeetsScraper.cs" Line="1" Column="1" />
+      <File FileName="MeetRetriever/Program.cs" Line="1" Column="1" />
+      <File FileName="MeetRetriever/Startup.cs" Line="7" Column="36" />
+      <File FileName="MeetRetrieverTests/Tests.cs" Line="10" Column="1" />
+      <File FileName="MeetRetriever/HtmlNodeExtensions.cs" Line="11" Column="10" />
+      <File FileName="MeetRetriever/Controllers/InfoController.cs" Line="1" Column="1" />
+      <File FileName="MeetRetriever/Controllers/EventsController.cs" Line="6" Column="23" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="MeetRetriever" expanded="True">
+            <Node name="MeetRetriever" expanded="True">
+              <Node name="Controllers" expanded="True">
+                <Node name="EventsController.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="MeetRetrieverTests" expanded="True">
+              <Node name="Dependencies" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.MeetRetrieverTests FirstBuild="True" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.MeetRetriever PreferredExecutionTarget="/Applications/Google Chrome.app" />
+</Properties>

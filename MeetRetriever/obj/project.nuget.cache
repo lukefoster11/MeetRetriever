@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "Q4rdPRERurHZSVuHVX56Pdr4u+CVZsnWYKKELx0FspNq/VJws9dzbf/xpXEP4UZ+nlR8AmFkgJbCaCNEk7Fz7Q==",
+  "success": true,
+  "projectFilePath": "/Users/lukefoster/MeetRetriever/MeetRetriever/MeetRetriever.csproj",
+  "expectedPackageFiles": [
+    "/Users/lukefoster/.nuget/packages/autofac/6.4.0/autofac.6.4.0.nupkg.sha512",
+    "/Users/lukefoster/.nuget/packages/autofac.extensions.dependencyinjection/8.0.0/autofac.extensions.dependencyinjection.8.0.0.nupkg.sha512",
+    "/Users/lukefoster/.nuget/packages/htmlagilitypack/1.11.43/htmlagilitypack.1.11.43.nupkg.sha512",
+    "/Users/lukefoster/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/6.0.0/microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
+    "/Users/lukefoster/.nuget/packages/system.diagnostics.diagnosticsource/4.7.1/system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512",
+    "/Users/lukefoster/.nuget/packages/system.runtime.compilerservices.unsafe/4.5.2/system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512",
+    "/Users/lukefoster/.nuget/packages/unity/5.11.10/unity.5.11.10.nupkg.sha512"
+  ],
+  "logs": []
+}
