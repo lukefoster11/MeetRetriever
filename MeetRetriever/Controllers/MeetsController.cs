@@ -26,6 +26,10 @@ namespace MeetRetriever.Controllers
             var currentMeets = _meetScraper.GetMeets(currentMeetInfo);
 
             _logger.LogInformation($"Successfully retrieved {currentMeets.Count()} current meets");
+            if (_meetScraper.errors > 0)
+            {
+                _logger.LogError($"Encountered {_meetScraper.errors} errors");
+            }
 
             return currentMeets;
         }
@@ -37,6 +41,10 @@ namespace MeetRetriever.Controllers
             var upcomingMeets = _meetScraper.GetMeets(upcomingMeetInfo);
 
             _logger.LogInformation($"Successfully retrieved {upcomingMeets.Count()} upcoming meets");
+            if (_meetScraper.errors > 0)
+            {
+                _logger.LogError($"Encountered {_meetScraper.errors} errors");
+            }
 
             return upcomingMeets;
         }

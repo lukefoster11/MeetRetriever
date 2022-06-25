@@ -28,6 +28,10 @@ namespace MeetRetriever.Controllers
             var events = _meetScraper.GetEvents(meetId, table);
 
             _logger.LogInformation($"Successfully retrieved {events.Count()} events");
+            if (_meetScraper.errors > 0)
+            {
+                _logger.LogError($"Encountered {_meetScraper.errors} errors");
+            }
 
             return events;
         }

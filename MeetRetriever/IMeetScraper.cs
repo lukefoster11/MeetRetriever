@@ -6,6 +6,8 @@ namespace MeetRetriever
 {
     public interface IMeetScraper
     {
+        int errors { get; }
+
         IEnumerable<HtmlNode> GetMeetInfoOfType(string meetType);
         IEnumerable<Meet> GetMeets(IEnumerable<HtmlNode> htmlNodes);
 
