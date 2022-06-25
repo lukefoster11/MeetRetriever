@@ -8,10 +8,10 @@ namespace MeetRetriever
     {
         int errors { get; }
 
-        IEnumerable<HtmlNode> GetMeetInfoOfType(string meetType);
-        IEnumerable<Meet> GetMeets(IEnumerable<HtmlNode> htmlNodes);
+        IEnumerable<Meet> GetMeets(string meetType);
 
-        HtmlNode GetEventInfoTable(int meetId);
-        IEnumerable<Event> GetEvents(int meetId, HtmlNode table);
+        IEnumerable<Event> GetEvents(int meetId);
+
+        IEnumerable<Entry> GetEntries(int meetId, int eventId, int eventType);
     }
 }

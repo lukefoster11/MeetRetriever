@@ -10,6 +10,113 @@ namespace MeetRetriever
     {
         public int errors { get; private set; }
 
+        public IEnumerable<Meet> GetMeets(string meetType)
+        {
+            var meets = new List<Meet>();
+
+            try
+            {
+                var meetInfoNodes = GetMeetInfoOfType(meetType);
+
+                foreach (var meetNode in meetInfoNodes)
+                {
+                    meets = AddMeetInfoToList(meetNode, meets);
+                }
+            }
+            catch (NullReferenceException) { }
+
+            return meets;
+        }
+
+        public IEnumerable<Event> GetEvents(int meetId)
+        {
+            var events = new List<Event>();
+
+            try
+            {
+                var table = GetEventInfoTable(meetId);
+                var tableRows = table.ChildNodes.Where(x => x.OriginalName == "tr");
+
+                var rowsOfInterest = tableRows.Where(x => x.Descendants("a")
+                    .Where(x => x.GetAttributeValue("href", "").Contains("event"))
+                    .Count() > 0 || x.Descendants("strong").Count() > 0);
+
+                var date = DateTime.Today;
+
+                foreach (var row in rowsOfInterest)
+                {
+                    var infoNode = row.Descendants("a").FirstOrDefault();
+
+                    if (infoNode != null)
+                    {
+                        events = AddEventInfoToList(infoNode, meetId, date, events);
+                    }
+                    else
+                    {
+                        date = UpdateDate(row, date);
+                    }
+                }
+            }
+            catch (NullReferenceException) { }
+
+            return events;
+        }
+
+        public IEnumerable<Entry> GetEntries(int meetId, int eventId, int eventType)
+        {
+            var entries = new List<Entry>();
+
+            try
+            {
+                var table = GetEntryInfoTable(meetId, eventId, eventType);
+
+                var tableRows = table.ChildNodes.Where(x => x.OriginalName == "tr");
+
+                var diverName = "";
+                var diverId = 0;
+                var dives = new List<Dive>();
+
+                foreach (var row in tableRows)
+                {
+                    try
+                    {
+                        if (row.Descendants("a").Where(x => x.GetAttributeValue("href", "").Contains("profile.php?number=")).Count() > 0)
+                        {
+                            diverName = row.Descendants("a").Where(x => x.GetAttributeValue("href", "").Contains("profile.php?number=")).FirstOrDefault().InnerText;
+                            int.TryParse(row.Descendants("a").Where(x => x.GetAttributeValue("href", "").Contains("profile.php?number=")).FirstOrDefault().GetAttributeValue("href", "").Split("number=").LastOrDefault(), out diverId);
+                            dives = new List<Dive>();
+                        }
+                        else if (row.Descendants("strong").Count() == 0)
+                        {
+                            var diveInfo = row.Descendants("td");
+                            var diveCode = diveInfo.ElementAt(1).InnerText;
+                            diveCode = diveCode.Split("\t").FirstOrDefault();
+                            var diveHeightString = diveInfo.ElementAt(2).InnerText;
+                            diveHeightString = diveHeightString.Split("M").FirstOrDefault();
+                            int.TryParse(diveHeightString, out int diveHeight);
+                            dives.Add(new Dive(diveCode, diveHeight));
+                        }
+
+                        else if (row.Descendants("strong").Where(x => x.InnerText.Contains("DD Total")).Count() > 0)
+                        {
+                            if (diverName != "" && diverId != 0)
+                            {
+                                entries.Add(new Entry(diverName, diverId, dives));
+                            }
+                        }
+                    }
+                    catch (NullReferenceException)
+                    {
+                        errors += 1;
+                    }
+
+                }
+            }
+            catch (NullReferenceException) { }
+
+            return entries;
+        }
+
         public HtmlDocument GetHtmlDocument(string url)
         {
             var web = new HtmlWeb();
@@ -69,21 +176,6 @@ namespace MeetRetriever
             }
         }
 
-        public IEnumerable<Meet> GetMeets(IEnumerable<HtmlNode> meetInfoNodes)
-        {
-            var meets = new List<Meet>();
-
-            if (meetInfoNodes != null)
-            {
-                foreach (var meetNode in meetInfoNodes)
-                {
-                    meets = AddMeetInfoToList(meetNode, meets);
-                }
-            }
-
-            return meets;
-        }
-
         public List<Meet> AddMeetInfoToList(HtmlNode meetNode, List<Meet> meets)
         {
             try
@@ -130,40 +222,6 @@ namespace MeetRetriever
             }
         }
 
-
-        public IEnumerable<Event> GetEvents(int meetId, HtmlNode table)
-        {
-            var events = new List<Event>();
-
-            try
-            {
-                var tableRows = table.ChildNodes.Where(x => x.OriginalName == "tr");
-
-                var rowsOfInterest = tableRows.Where(x => x.Descendants("a")
-                    .Where(x => x.GetAttributeValue("href", "").Contains("event"))
-                    .Count() > 0 || x.Descendants("strong").Count() > 0);
-
-                var date = DateTime.Today;
-
-                foreach (var row in rowsOfInterest)
-                {
-                    var infoNode = row.Descendants("a").FirstOrDefault();
-
-                    if (infoNode != null)
-                    {
-                        events = AddEventInfoToList(infoNode, meetId, date, events);
-                    }
-                    else
-                    {
-                        date = UpdateDate(row, date);
-                    }
-                }
-            }
-            catch (NullReferenceException) { }
-
-            return events;
-        }
-
         public List<Event> AddEventInfoToList(HtmlNode infoNode, int meetId, DateTime date, List<Event> events)
         {
             try
@@ -180,14 +238,14 @@ namespace MeetRetriever
 
                     int.TryParse(linkNode.GetAttributeValue("href", "").Split("eventtype=").LastOrDefault(), out int eventType);
 
-                    events.Add(new Event(name, id, meetId, eventType, date));
+                    events.Add(new Event(name, id, eventType, date));
                 }
                 else
                 {
                     var linkNode = eventInfoNode.Descendants("a").Where(x => x.InnerText == "Rule").FirstOrDefault();
                     int.TryParse(linkNode.GetAttributeValue("href", "").Split("event=").LastOrDefault(), out int id);
 
-                    events.Add(new Event(name, id, meetId, date));
+                    events.Add(new Event(name, id, null, date));
                 }
             }
             catch (NullReferenceException)
@@ -218,6 +276,22 @@ namespace MeetRetriever
             }
 
             return date;
+        }
+
+        public HtmlNode GetEntryInfoTable(int meetId, int eventId, int eventType)
+        {
+            try
+            {
+                var doc = GetHtmlDocument(@"https://secure.meetcontrol.com/divemeets/system/divesheetext.php?meetnum=" + meetId.ToString() + @"&eventnum=" + eventId.ToString() + @"&eventtype=" + eventType.ToString());
+                var contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='dm_content']");
+                var tableNode = contentNode.ChildNodes.Where(x => x.Name == "table").FirstOrDefault();
+
+                return tableNode.Descendants("table").LastOrDefault();
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
         }
     }
 }

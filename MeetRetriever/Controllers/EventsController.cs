@@ -24,8 +24,7 @@ namespace MeetRetriever.Controllers
         [HttpGet("{meetId}")]
         public IEnumerable<Event> GetEvents(int meetId)
         {
-            var table = _meetScraper.GetEventInfoTable(meetId);
-            var events = _meetScraper.GetEvents(meetId, table);
+            var events = _meetScraper.GetEvents(meetId);
 
             _logger.LogInformation($"Successfully retrieved {events.Count()} events");
             if (_meetScraper.errors > 0)

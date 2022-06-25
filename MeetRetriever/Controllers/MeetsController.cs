@@ -22,8 +22,7 @@ namespace MeetRetriever.Controllers
         [HttpGet]
         public IEnumerable<Meet> GetCurrentMeets()
         {
-            var currentMeetInfo = _meetScraper.GetMeetInfoOfType("Current Meets");
-            var currentMeets = _meetScraper.GetMeets(currentMeetInfo);
+            var currentMeets = _meetScraper.GetMeets("Current Meets");
 
             _logger.LogInformation($"Successfully retrieved {currentMeets.Count()} current meets");
             if (_meetScraper.errors > 0)
@@ -37,8 +36,7 @@ namespace MeetRetriever.Controllers
         [HttpGet("upcoming")]
         public IEnumerable<Meet> GetUpcomingMeets()
         {
-            var upcomingMeetInfo = _meetScraper.GetMeetInfoOfType("Upcoming Meets");
-            var upcomingMeets = _meetScraper.GetMeets(upcomingMeetInfo);
+            var upcomingMeets = _meetScraper.GetMeets("Upcoming Meets");
 
             _logger.LogInformation($"Successfully retrieved {upcomingMeets.Count()} upcoming meets");
             if (_meetScraper.errors > 0)
