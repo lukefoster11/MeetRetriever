@@ -8,5 +8,8 @@ namespace MeetRetriever
     {
         IEnumerable<HtmlNode> GetMeetInfoOfType(string meetType);
         IEnumerable<Meet> GetMeets(IEnumerable<HtmlNode> htmlNodes);
+
+        HtmlNode GetEventInfoTable(int meetId);
+        IEnumerable<Event> GetEvents(int meetId, HtmlNode table);
     }
 }

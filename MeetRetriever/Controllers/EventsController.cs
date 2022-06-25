@@ -22,9 +22,14 @@ namespace MeetRetriever.Controllers
         }
 
         [HttpGet("{meetId}")]
-        public IEnumerable<Event> GetEvents()
+        public IEnumerable<Event> GetEvents(int meetId)
         {
-            return new List<Event>();
+            var table = _meetScraper.GetEventInfoTable(meetId);
+            var events = _meetScraper.GetEvents(meetId, table);
+
+            _logger.LogInformation($"Successfully retrieved {events.Count()} events");
+
+            return events;
         }
     }
 }

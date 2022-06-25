@@ -1,1 +1,8 @@
 
+.vs
+MeetRetriever/bin
+MeetRetriever/obj
+MeetRetriever/.DS_Store
+MeetRetrieverTests/obj
+MeetRetrieverTests/.DS_Store
+.DS_Store

@@ -15,41 +15,25 @@ namespace MeetRetriever.Models
         public string Name { get; }
         public int Id { get; }
         public int MeetId { get; }
-        public BoardType Height { get; }
-        public List<Diver> Divers { get; private set; }
-        public int NumDives { get; }
+        public int? EventType { get; }
         public DateTime Date { get; }
 
-        public Event(string name, int id, int meetId, BoardType height, int numDives, DateTime date)
+        public Event(string name, int id, int meetId, DateTime date)
         {
             Name = name;
             Id = id;
             MeetId = meetId;
-            Height = height;
-            Divers = new List<Diver>();
-            NumDives = numDives;
+            EventType = null;
             Date = date;
         }
 
-        public Event(string name, int id, int meetId, BoardType height, List<Diver> divers, int numDives, DateTime date)
+        public Event(string name, int id, int meetId, int eventType, DateTime date)
         {
             Name = name;
             Id = id;
             MeetId = meetId;
-            Height = height;
-            Divers = divers;
-            NumDives = numDives;
+            EventType = eventType;
             Date = date;
-        }
-
-        public void Add_Diver(Diver diver)
-        {
-            Divers.Add(diver);
-        }
-
-        public void Add_Divers(IEnumerable<Diver> divers)
-        {
-            Divers.AddRange(divers);
         }
     }
 }
