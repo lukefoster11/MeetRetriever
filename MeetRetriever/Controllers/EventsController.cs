@@ -35,6 +35,19 @@ namespace MeetRetriever.Controllers
             return events;
         }
 
+        [HttpGet("{meetId}/{eventId}")]
+        public IEnumerable<Event> GetEventInfo(int meetId, int eventId)
+        {
+            var _event = _meetScraper.GetEventInfo(meetId, eventId);
+
+            if (_meetScraper.errors > 0)
+            {
+                _logger.LogError($"Encountered {_meetScraper.errors} errors");
+            }
+
+            return _event;
+        }
+
         [HttpGet("{meetId}/{eventId}/{eventType}")]
         public Event GetEventInfo(int meetId, int eventId, int eventType)
         {

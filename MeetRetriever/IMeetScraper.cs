@@ -8,12 +8,13 @@ namespace MeetRetriever
     {
         int errors { get; }
 
-        IEnumerable<Meet> GetMeets(string meetType);
+        IEnumerable<MeetSummary> GetMeets(string meetType);
 
-        Meet GetMeetInfo(int meetId);
+        MeetSummary GetMeetInfo(int meetId);
 
         IEnumerable<Event> GetEvents(int meetId);
 
+        IEnumerable<Event> GetEventInfo(int meetId, int eventId);
         Event GetEventInfo(int meetId, int eventId, int eventType);
 
         IEnumerable<Entry> GetEntries(int meetId, int eventId, int eventType);

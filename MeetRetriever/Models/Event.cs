@@ -9,14 +9,15 @@ namespace MeetRetriever.Models
         public int Id { get; }
         public int? EventType { get; }
         public DateTime Date { get; }
-        //TODO: include number of entries
+        public int NumEntries { get; }
 
-        public Event(string name, int id, int? eventType, DateTime date)
+        public Event(string name, int id, int? eventType, DateTime date, int numEntries)
         {
             Name = name;
             Id = id;
             EventType = eventType;
             Date = date;
+            NumEntries = numEntries;
         }
     }
 }

@@ -13,9 +13,9 @@ namespace MeetRetriever
 
         // MEETS CONTROLLER
 
-        public IEnumerable<Meet> GetMeets(string meetType)
+        public IEnumerable<MeetSummary> GetMeets(string meetType)
         {
-            var meets = new List<Meet>();
+            var meets = new List<MeetSummary>();
 
             try
             {
@@ -31,7 +31,7 @@ namespace MeetRetriever
             return meets;
         }
 
-        public Meet GetMeetInfo(int meetId)
+        public MeetSummary GetMeetInfo(int meetId)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace MeetRetriever
                 var endDateNode = meetInfoNodes.Where(x => x.Descendants("td").FirstOrDefault().InnerText.Replace("\t", "").Replace("\n", "").Replace("\r", "").ToLower() == "end date:").FirstOrDefault();
                 DateTime.TryParse(endDateNode.Descendants("strong").LastOrDefault().InnerText, out DateTime endDate);
 
-                return new Meet(name, meetId, location, startDate, endDate);
+                return new MeetSummary(name, meetId, location, startDate, endDate);
             }
             catch (NullReferenceException)
             {
@@ -89,9 +89,76 @@ namespace MeetRetriever
             return events;
         }
 
+        public IEnumerable<Event> GetEventInfo(int meetId, int eventId)
+        {
+            var events = new List<Event>();
+
+            try
+            {
+                var eventInfoNodes = GetEventInfoNodes(meetId);
+
+                eventInfoNodes = eventInfoNodes.Where(x => x.Descendants("a").Where(y => y.GetAttributeValue("href", "").Contains($"event={eventId}")).Count() > 0);
+
+                foreach (var eventInfoNode in eventInfoNodes)
+                {
+                    try
+                    {
+                        var nameNode = eventInfoNode.Descendants("a").FirstOrDefault().ParentNode.Descendants("#text").FirstOrDefault();
+                        var name = nameNode.InnerText.Split("&nbsp").FirstOrDefault().Trim();
+
+                        var date = GetRecentDate(eventInfoNode);
+
+                        var hasEntries = eventInfoNode.Descendants("a").Where(x => x.InnerText.Contains("Entries")).Count() > 0;
+                        if (hasEntries)
+                        {
+                            var linkNode = eventInfoNode.Descendants("a").Where(x => x.InnerText.Contains("Entries")).FirstOrDefault();
+
+                            int.TryParse(linkNode.GetAttributeValue("href", "").Split("eventtype=").LastOrDefault(), out int eventType);
+
+                            int.TryParse(linkNode.InnerText.Split("Entries").FirstOrDefault().Trim(), out int numEntries);
+
+                            events.Add(new Event(name, eventId, eventType, date, numEntries));
+                        }
+                        else
+                        {
+                            events.Add(new Event(name, eventId, null, date, 0));
+                        }
+                    }
+                    catch (NullReferenceException)
+                    {
+                        errors++;
+                    }
+                }
+            }
+            catch (NullReferenceException) { }
+
+            return events;
+        }
+
         public Event GetEventInfo(int meetId, int eventId, int eventType)
         {
-            return new Event("test", 420, null, DateTime.Now);
+            try
+            {
+                var eventInfoNodes = GetEventInfoNodes(meetId);
+
+                var eventInfoNode = eventInfoNodes.Where(x => x.Descendants("a").Where(y => y.GetAttributeValue("href", "").Contains($"event={eventId}&eventtype={eventType}")).Count() > 0).FirstOrDefault();
+
+                var nameNode = eventInfoNode.Descendants("a").FirstOrDefault().ParentNode.Descendants("#text").FirstOrDefault();
+                var name = nameNode.InnerText.Split("&nbsp").FirstOrDefault().Trim();
+
+                var date = GetRecentDate(eventInfoNode);
+
+                var linkNode = eventInfoNode.Descendants("a").Where(x => x.InnerText.Contains("Entries")).FirstOrDefault();
+                int.TryParse(linkNode.GetAttributeValue("href", "").Split("&eventtype").FirstOrDefault().Split("eventnum=").LastOrDefault(), out int id);
+
+                int.TryParse(linkNode.InnerText.Split("Entries").FirstOrDefault().Trim(), out int numEntries);
+
+                return new Event(name, id, eventType, date, numEntries);
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
         }
 
 
@@ -244,7 +311,7 @@ namespace MeetRetriever
             }
         }
 
-        public List<Meet> AddMeetInfoToList(HtmlNode meetNode, List<Meet> meets)
+        public List<MeetSummary> AddMeetInfoToList(HtmlNode meetNode, List<MeetSummary> meets)
         {
             try
             {
@@ -264,7 +331,7 @@ namespace MeetRetriever
                 var location = locationNode.InnerText;
                 var dates = ParseDates(locationNode.NextSibling.InnerText);
 
-                meets.Add(new Meet(name, id, location, dates.Item1, dates.Item2));
+                meets.Add(new MeetSummary(name, id, location, dates.Item1, dates.Item2));
             }
             catch (NullReferenceException)
             {
@@ -313,15 +380,16 @@ namespace MeetRetriever
                     int.TryParse(linkNode.GetAttributeValue("href", "").Split("&eventtype").FirstOrDefault().Split("eventnum=").LastOrDefault(), out int id);
 
                     int.TryParse(linkNode.GetAttributeValue("href", "").Split("eventtype=").LastOrDefault(), out int eventType);
+                    int.TryParse(linkNode.InnerText.Split("Entries").FirstOrDefault().Trim(), out int numEntries);
 
-                    events.Add(new Event(name, id, eventType, date));
+                    events.Add(new Event(name, id, eventType, date, numEntries));
                 }
                 else
                 {
                     var linkNode = eventInfoNode.Descendants("a").Where(x => x.InnerText == "Rule").FirstOrDefault();
                     int.TryParse(linkNode.GetAttributeValue("href", "").Split("event=").LastOrDefault(), out int id);
 
-                    events.Add(new Event(name, id, null, date));
+                    events.Add(new Event(name, id, null, date, 0));
                 }
             }
             catch (NullReferenceException)
@@ -336,7 +404,7 @@ namespace MeetRetriever
         {
             try
             {
-                HtmlNode infoNode = row.Descendants("strong").FirstOrDefault();
+                var infoNode = row.Descendants("strong").FirstOrDefault();
                 if (infoNode != null)
                 {
                     var tempDate = date;
@@ -351,6 +419,31 @@ namespace MeetRetriever
                 errors++;
             }
 
+            return date;
+        }
+
+        public DateTime GetRecentDate(HtmlNode row)
+        {
+            var reachedDate = false;
+            DateTime date = DateTime.MinValue;
+            while (!reachedDate)
+            {
+                if (row.Descendants("strong").Count() > 0)
+                {
+                    var infoNode = row.Descendants("strong").FirstOrDefault();
+                    if (DateTime.TryParse(infoNode.InnerText, out date))
+                    {
+                        reachedDate = true;
+                    } else
+                    {
+                        row = row.PreviousSibling;
+                    }
+                }
+                else
+                {
+                    row = row.PreviousSibling;
+                }
+            }
             return date;
         }
 

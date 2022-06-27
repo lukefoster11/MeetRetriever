@@ -20,7 +20,7 @@ namespace MeetRetriever.Controllers
         }
         
         [HttpGet("meets")]
-        public IEnumerable<Meet> GetCurrentMeets()
+        public IEnumerable<MeetSummary> GetCurrentMeets()
         {
             var currentMeets = _meetScraper.GetMeets("Current Meets");
 
@@ -34,7 +34,7 @@ namespace MeetRetriever.Controllers
         }
 
         [HttpGet("meets/upcoming")]
-        public IEnumerable<Meet> GetUpcomingMeets()
+        public IEnumerable<MeetSummary> GetUpcomingMeets()
         {
             var upcomingMeets = _meetScraper.GetMeets("Upcoming Meets");
 
@@ -48,7 +48,7 @@ namespace MeetRetriever.Controllers
         }
 
         [HttpGet("{meetId}")]
-        public Meet GetMeetInfo(int meetId)
+        public MeetSummary GetMeetInfo(int meetId)
         {
             var meet = _meetScraper.GetMeetInfo(meetId);
 
