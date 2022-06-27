@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MeetRetriever.Models
 {
-    public class Entry
+    public class ScoredList
     {
         public string DiverName { get; }
         public int DiverId { get; }
-        public List<Dive> DiveList { get; }
-        // TODO: update to include team
+        public List<ScoredDive> DiveList { get; }
 
-        public Entry(string diverName, int diverId, List<Dive> diveList)
+        public ScoredList(string diverName, int diverId, List<ScoredDive> diveList)
         {
             DiverName = diverName;
             DiverId = diverId;

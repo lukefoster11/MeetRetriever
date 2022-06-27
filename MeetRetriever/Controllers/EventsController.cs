@@ -9,7 +9,7 @@ using System.Linq;
 namespace MeetRetriever.Controllers
 {
     [ApiController]
-    [Route("meets")]
+    [Route("")]
     public class EventsController : ControllerBase
     {
         private readonly ILogger<InfoController> _logger;

@@ -9,6 +9,7 @@ namespace MeetRetriever.Models
         public string Location { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
+        //TODO: (maybe) include all entered divers
 
         public Meet(string name, int id, string location, DateTime startDate, DateTime endDate)
         {

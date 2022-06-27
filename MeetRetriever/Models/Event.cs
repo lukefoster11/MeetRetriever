@@ -9,6 +9,7 @@ namespace MeetRetriever.Models
         public int Id { get; }
         public int? EventType { get; }
         public DateTime Date { get; }
+        //TODO: include number of entries
 
         public Event(string name, int id, int? eventType, DateTime date)
         {

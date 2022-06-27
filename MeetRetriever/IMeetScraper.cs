@@ -13,5 +13,7 @@ namespace MeetRetriever
         IEnumerable<Event> GetEvents(int meetId);
 
         IEnumerable<Entry> GetEntries(int meetId, int eventId, int eventType);
+
+        IEnumerable<Result> GetResults(int meetId, int eventId, int eventType);
     }
 }
