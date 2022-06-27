@@ -7,7 +7,7 @@ using System.Linq;
 namespace MeetRetriever.Controllers
 {
     [ApiController]
-    [Route("meets")]
+    [Route("")]
     public class MeetsController : ControllerBase
     {
         private readonly ILogger<InfoController> _logger;
@@ -19,7 +19,7 @@ namespace MeetRetriever.Controllers
             _meetScraper = meetScraper;
         }
         
-        [HttpGet]
+        [HttpGet("meets")]
         public IEnumerable<Meet> GetCurrentMeets()
         {
             var currentMeets = _meetScraper.GetMeets("Current Meets");
@@ -33,7 +33,7 @@ namespace MeetRetriever.Controllers
             return currentMeets;
         }
 
-        [HttpGet("upcoming")]
+        [HttpGet("meets/upcoming")]
         public IEnumerable<Meet> GetUpcomingMeets()
         {
             var upcomingMeets = _meetScraper.GetMeets("Upcoming Meets");
@@ -45,6 +45,19 @@ namespace MeetRetriever.Controllers
             }
 
             return upcomingMeets;
+        }
+
+        [HttpGet("{meetId}")]
+        public Meet GetMeetInfo(int meetId)
+        {
+            var meet = _meetScraper.GetMeetInfo(meetId);
+
+            if (_meetScraper.errors > 0)
+            {
+                _logger.LogError($"Encountered {_meetScraper.errors} errors");
+            }
+
+            return meet;
         }
     }
 }

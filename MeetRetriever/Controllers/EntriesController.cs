@@ -19,7 +19,7 @@ namespace MeetRetriever.Controllers
             _meetScraper = meetScraper;
         }
 
-        [HttpGet("{meetId}/{eventId}/{eventType}")]
+        [HttpGet("{meetId}/{eventId}/{eventType}/entries")]
         public IEnumerable<Entry> GetEntries(int meetId, int eventId, int eventType)
         {
             var entries = _meetScraper.GetEntries(meetId, eventId, eventType);

@@ -10,6 +10,9 @@ namespace MeetRetriever
     {
         public int errors { get; private set; }
 
+
+        // MEETS CONTROLLER
+
         public IEnumerable<Meet> GetMeets(string meetType)
         {
             var meets = new List<Meet>();
@@ -27,6 +30,35 @@ namespace MeetRetriever
 
             return meets;
         }
+
+        public Meet GetMeetInfo(int meetId)
+        {
+            try
+            {
+                var meetInfoNodes = GetMeetInfoNodes(meetId);
+
+                var nameNode = meetInfoNodes.Where(x => x.Descendants("td").FirstOrDefault().InnerText.Replace("\t", "").Replace("\n", "").Replace("\r", "").ToLower() == "name:").FirstOrDefault();
+                var name = nameNode.Descendants("strong").LastOrDefault().InnerText;
+
+                var locationNode = meetInfoNodes.Where(x => x.Descendants("td").FirstOrDefault().InnerText.Replace("\t", "").Replace("\n", "").Replace("\r", "").ToLower() == "pool:").FirstOrDefault();
+                var location = locationNode.Descendants("strong").LastOrDefault().Descendants("#text").ElementAtOrDefault(2).InnerText;
+
+                var startDateNode = meetInfoNodes.Where(x => x.Descendants("td").FirstOrDefault().InnerText.Replace("\t", "").Replace("\n", "").Replace("\r", "").ToLower() == "start date:").FirstOrDefault();
+                DateTime.TryParse(startDateNode.Descendants("strong").LastOrDefault().InnerText, out DateTime startDate);
+
+                var endDateNode = meetInfoNodes.Where(x => x.Descendants("td").FirstOrDefault().InnerText.Replace("\t", "").Replace("\n", "").Replace("\r", "").ToLower() == "end date:").FirstOrDefault();
+                DateTime.TryParse(endDateNode.Descendants("strong").LastOrDefault().InnerText, out DateTime endDate);
+
+                return new Meet(name, meetId, location, startDate, endDate);
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
+        }
+
+
+        // EVENTS CONTROLLER
 
         public IEnumerable<Event> GetEvents(int meetId)
         {
@@ -56,6 +88,14 @@ namespace MeetRetriever
 
             return events;
         }
+
+        public Event GetEventInfo(int meetId, int eventId, int eventType)
+        {
+            return new Event("test", 420, null, DateTime.Now);
+        }
+
+
+        // ENTRIES CONTROLLER
 
         public IEnumerable<Entry> GetEntries(int meetId, int eventId, int eventType)
         {
@@ -93,7 +133,7 @@ namespace MeetRetriever
                     }
                     catch (NullReferenceException)
                     {
-                        errors += 1;
+                        errors++;
                     }
 
                 }
@@ -102,6 +142,9 @@ namespace MeetRetriever
 
             return entries;
         }
+
+
+        // RESULTS CONTROLLER
 
         public IEnumerable<Result> GetResults(int meetId, int eventId, int eventType)
         {
@@ -121,11 +164,17 @@ namespace MeetRetriever
             return results;
         }
 
+
+        // HELPERS
+        // general
+
         public HtmlDocument GetHtmlDocument(string url)
         {
             var web = new HtmlWeb();
             return web.Load(url);
         }
+
+        // meets
 
         public HtmlNode GetMeetInfoNode()
         {
@@ -134,6 +183,21 @@ namespace MeetRetriever
                 var doc = GetHtmlDocument(@"https://secure.meetcontrol.com/divemeets/system/index.php#");
                 var contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='dm_content']");
                 return contentNode.Descendants("div").Where(x => x.Descendants("table").Count() > 0).FirstOrDefault();
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<HtmlNode> GetMeetInfoNodes(int meetId)
+        {
+            try
+            {
+                var doc = GetHtmlDocument(@"https://secure.meetcontrol.com/divemeets/system/meetinfoext.php?meetnum=" + meetId.ToString());
+                var contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='dm_content']");
+                var tableNode = contentNode.ChildNodes.Where(x => x.Name == "table").FirstOrDefault();
+                return tableNode.ChildNodes.Where(x => x.Name == "tr");
             }
             catch (NullReferenceException)
             {
@@ -204,11 +268,13 @@ namespace MeetRetriever
             }
             catch (NullReferenceException)
             {
-                errors += 1;
+                errors++;
             }
 
             return meets;
         }
+
+        // events
 
         public IEnumerable<HtmlNode> GetEventInfoNodes(int meetId)
         {
@@ -260,7 +326,7 @@ namespace MeetRetriever
             }
             catch (NullReferenceException)
             {
-                errors += 1;
+                errors++;
             }
 
             return events;
@@ -282,11 +348,13 @@ namespace MeetRetriever
             }
             catch (NullReferenceException)
             {
-                errors += 1;
+                errors++;
             }
 
             return date;
         }
+
+        // entries
 
         public IEnumerable<HtmlNode> GetEntryInfoNodes(int meetId, int eventId, int eventType)
         {
@@ -323,6 +391,8 @@ namespace MeetRetriever
             return new Dive(diveCode, diveHeight);
         }
 
+        // results
+
         public IEnumerable<HtmlNode> GetResultInfoNodes(int meetId, int eventId, int eventType)
         {
             var doc = GetHtmlDocument(@"https://secure.meetcontrol.com/divemeets/system/eventresultsext.php?meetnum=" + meetId.ToString() + @"&eventnum=" + eventId.ToString() + @"&eventtype=" + eventType.ToString());
@@ -351,7 +421,7 @@ namespace MeetRetriever
             }
             catch (NullReferenceException)
             {
-                errors += 1;
+                errors++;
             }
             return results;
         }
